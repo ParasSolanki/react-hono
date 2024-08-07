@@ -9,6 +9,10 @@ serve(
     port,
   },
   () => {
-    console.log(`Server is running on port http://localhost:${port}`);
+    const url =
+      process.env.NODE_ENV === "production"
+        ? process.env.RENDER_EXTERNAL_URL
+        : `http://localhost:${port}`;
+    console.log(`Server is running on port ${url}`);
   }
 );
