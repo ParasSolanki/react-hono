@@ -6,7 +6,7 @@ RUN corepack enable
 
 WORKDIR /app
 
-ENV NODE_ENV="production"
+
 
 FROM base AS prod-deps
 
@@ -21,6 +21,8 @@ COPY --link . .
 
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm fetch --frozen-lockfile 
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile 
+
+ENV NODE_ENV="production"
 
 # Build the server and web
 RUN pnpm run -r build
