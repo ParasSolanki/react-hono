@@ -1,4 +1,4 @@
-FROM node:20.16-bullseye-slim AS base
+FROM node:20.16-bullseye AS base
 
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
@@ -8,11 +8,9 @@ WORKDIR /app
 
 # Install node modules
 FROM base AS build
-COPY --link pnpm-lock.yaml package.json ./
-RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile 
-
 # Copy the rest of the application code
 COPY --link . .
+RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile 
 
 # Build the server
 RUN pnpm run -r build
