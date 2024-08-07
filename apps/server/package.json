@@ -1,0 +1,21 @@
+{
+  "name": "server",
+  "type": "module",
+  "scripts": {
+    "start": "node ./dist/index.js",
+    "dev": "tsx watch src/index.ts",
+    "build": "tsx esbuild.config.ts"
+  },
+  "packageManager": "pnpm@8.15.4",
+  "dependencies": {
+    "@hono/node-server": "^1.12.0",
+    "@hono/zod-openapi": "^0.15.1",
+    "esbuild": "^0.23.0",
+    "hono": "^4.5.3",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.17",
+    "tsx": "^4.16.5"
+  }
+}

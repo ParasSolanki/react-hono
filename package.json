@@ -1,0 +1,10 @@
+{
+  "name": "react-hono",
+  "type": "module",
+  "scripts": {
+    "start": "node ./dist/index.js",
+    "build:api": "pnpm run build --filter=apps/server",
+    "build:web": "pnpm run build --filter=apps/web"
+  },
+  "packageManager": "pnpm@8.15.4"
+}
