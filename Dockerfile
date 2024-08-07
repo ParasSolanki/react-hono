@@ -6,6 +6,7 @@ RUN corepack enable
 
 WORKDIR /app
 
+ENV NODE_ENV="production"
 
 FROM base AS prod-deps
 
