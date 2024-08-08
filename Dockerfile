@@ -13,7 +13,7 @@ RUN pnpm --filter=web deploy dist/web
 WORKDIR /app
 
 ENV NODE_ENV="production"
-
+COPY --link ./dist ./
 # Build the server and web
 RUN cd dist/server && pnpm run build
 RUN cd dist/web && pnpm run build
