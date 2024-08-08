@@ -5,12 +5,13 @@ ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
 RUN corepack enable
 
+WORKDIR /app
+
 FROM base as pruned
 COPY --link ./package.json ./pnpm-lock.yaml ./pnpm-workspace.yaml ./
 RUN pnpm --filter=server deploy dist/server
 RUN pnpm --filter=web deploy dist/web
 
-WORKDIR /app
 
 ENV NODE_ENV="production"
 COPY --link ./dist ./
