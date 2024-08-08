@@ -7,7 +7,7 @@ RUN corepack enable
 
 FROM base as build
 WORKDIR /app
-COPY --link ./pnpm-lock.yaml ./pnpm-workspace.yaml ./
+COPY --link ./pnpm-lock.yaml ./pnpm-workspace.yaml ./package.json ./
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm fetch --frozen-lockfile
 
 ENV NODE_ENV="production"
