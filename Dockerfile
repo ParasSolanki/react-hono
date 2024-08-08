@@ -1,5 +1,5 @@
 
-FROM node:20.16-bullseye as base
+FROM node:20.16-slim as base
 
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
@@ -13,10 +13,9 @@ RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm fetch --prod --frozen-loc
 
 ENV NODE_ENV="production"
 COPY --link . .
-RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm recursive install --offline --frozen-lockfile
+RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm -r install --offline --frozen-lockfile
 
-RUN pnpm build:api
-RUN pnpm build:web
+RUN pnpm -r build
 
 FROM base
 # Copy only the necessary files from the cleanup stage
