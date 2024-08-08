@@ -14,7 +14,7 @@ ENV NODE_ENV="production"
 ADD . ./
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install -r --offline --frozen-lockfile
 
-RUN pnpm -r build
+RUN pnpm run -r build
 
 FROM base
 # Copy only the necessary files from the cleanup stage
