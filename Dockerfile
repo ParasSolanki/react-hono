@@ -1,40 +1,30 @@
-FROM node:20.16-bullseye AS base
+
+FROM node:20.16-bullseye
 
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
 RUN corepack enable
 
+FROM workspace as pruned
+
+RUN pnpm --filter=server deploy dist/server
+RUN pnpm --filter=wev deploy dist/web
+
 WORKDIR /app
-
-
-
-FROM base AS prod-deps
-
-COPY --link . .
-RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm fetch --frozen-lockfile
-RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --prod --frozen-lockfile 
-
-
-FROM base AS build
-
-COPY --link . .
-
-RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm fetch --frozen-lockfile 
-RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile 
 
 ENV NODE_ENV="production"
 
 # Build the server and web
-RUN pnpm run -r build
+RUN cd dist/server && pnpm run build
+RUN cd dist/web && pnpm run build
 
 # Final stage
 FROM base
 # Copy only the necessary files from the cleanup stage
-COPY --from=build /app/apps/server/dist /app/dist
-COPY --from=build /app/apps/server/package.json /app/package.json
-COPY --from=build /app/apps/web/dist /app/frontend/dist
-COPY --from=prod-deps /app/node_modules /app/node_modules
+COPY --from=pruned /app/dist/server/dist /app/dist
+COPY --from=pruned /app/dist/server/node_modules /app/node_modules
+COPY --from=build /app/dist/web/dist /app/frontend/dist
 
 EXPOSE 3000
 
-CMD [ "pnpm", "start" ]
+CMD [ "node", "dist/index.js" ]
