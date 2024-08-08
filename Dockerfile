@@ -1,11 +1,11 @@
 
-FROM node:20.16-bullseye 
+FROM node:20.16-bullseye as base
 
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
 RUN corepack enable
 
-FROM workspace as pruned
+FROM base as pruned
 
 RUN pnpm --filter=server deploy dist/server
 RUN pnpm --filter=web deploy dist/web
@@ -18,7 +18,7 @@ ENV NODE_ENV="production"
 RUN cd dist/server && pnpm run build
 RUN cd dist/web && pnpm run build
 
-
+FROM base as production
 # Copy only the necessary files from the cleanup stage
 COPY --from=pruned /app/dist/server/dist /app/dist
 COPY --from=pruned /app/dist/server/node_modules /app/node_modules
