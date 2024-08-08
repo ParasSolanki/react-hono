@@ -7,13 +7,12 @@ RUN corepack enable
 
 FROM base as build
 WORKDIR /app
-COPY --link ./pnpm-workspace.yaml ./
-COPY --link ./pnpm-lock.yaml ./
+COPY --link ./pnpm-lock.yaml ./pnpm-workspace.yaml ./
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm fetch --prod --frozen-lockfile
 
 ENV NODE_ENV="production"
-COPY --link . .
-RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm -r install --offline --frozen-lockfile
+ADD . ./
+RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install -r --offline --frozen-lockfile
 
 RUN pnpm -r build
 
