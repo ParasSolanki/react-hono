@@ -23,7 +23,7 @@ FROM base
 # Copy only the necessary files from the cleanup stage
 COPY --from=pruned /app/dist/server/dist /app/dist
 COPY --from=pruned /app/dist/server/node_modules /app/node_modules
-COPY --from=build /app/dist/web/dist /app/frontend/dist
+COPY --from=pruned /app/dist/web/dist /app/frontend/dist
 
 EXPOSE 3000
 
