@@ -5,23 +5,24 @@ ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
 RUN corepack enable
 
-FROM base as pruned
+FROM base as build
 WORKDIR /app
-COPY --link ./package.json ./pnpm-lock.yaml ./pnpm-workspace.yaml ./
-RUN pnpm --filter=server deploy dist/server
-RUN pnpm --filter=web deploy dist/web
+COPY --link ./pnpm-workspace.yaml ./
+COPY --link ./pnpm-lock.yaml ./
+RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm fetch --prod --frozen-lockfile
 
 ENV NODE_ENV="production"
 COPY --link . .
-# Build the server and web
-RUN cd dist/server && pnpm run build
-RUN cd dist/web && pnpm run build
+RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm recursive install --offline --frozen-lockfile
 
-FROM base as production
+RUN pnpm build:api
+RUN pnpm build:web
+
+FROM base
 # Copy only the necessary files from the cleanup stage
-COPY --from=pruned /app/dist/server/dist /app/dist
-COPY --from=pruned /app/dist/server/node_modules /app/node_modules
-COPY --from=pruned /app/dist/web/dist /app/frontend/dist
+COPY --from=build /app/dist/server/dist /app/dist
+COPY --from=build /app/dist/server/node_modules /app/node_modules
+COPY --from=build /app/dist/web/dist /app/frontend/dist
 
 EXPOSE 3000
 
