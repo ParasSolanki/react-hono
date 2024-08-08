@@ -6,7 +6,7 @@ ENV PATH="$PNPM_HOME:$PATH"
 RUN corepack enable
 
 FROM base as pruned
-
+COPY --link ./package.json ./pnpm-lock.yaml ./pnpm-workspace.yaml ./
 RUN pnpm --filter=server deploy dist/server
 RUN pnpm --filter=web deploy dist/web
 
